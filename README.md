@@ -38,8 +38,16 @@ I have a bay window area in our main bedroom with Venetian blinds.
 I close the blinds, which gives me a white backdrop for my talk.
 Light leaks through the blinds when recording during the day, so recording in the dark is better.
 
+## Use external microphone (?)
+
+It's often recommended that when recording a talk, you use an external microphone. 
+Apparently, many laptops have inadequate built-in microphones.
+Often, these microphones add a metallic effect.
+You should test the assumption that your built-in microphones are inadequate.
+I have found that the built-in microphone in my 2024 MacBook Pro produces results just as good as any external microphone I've tried, including three expensive ones.
+
 ## Resizing of the slides
-The third problem is often the sizing and positioning of the slideshow in the captured area.
+The third problem is often the slideshow's size and position in the captured area.
 You can address this by loading PNG files for each slide.
 OBS then handles the slide sizing.
 You have to run a script to convert your slide PDF into PNG files.
@@ -47,7 +55,7 @@ You have to run a script to convert your slide PDF into PNG files.
 ## Positioning of webcam on slides
 The fourth problem is positioning the box that contains your talking head.
 You can customize the shape and size of this box in several ways.
-Sometimes you're stuck with the presets, which may be a bit wider than you want.
+Sometimes you're stuck with presets that may be a bit wider than you want.
 The positioning of this box is critical and should be considered before or while you make your slides, because you don't want it to cover any important information.
 
 ## Remux the MKV file
