@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2026-11-10 Tue 04:57 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Recording an EmacsConf 2026 Slide Talk with OBS</title>
+<meta name="author" content="Blaine Mooers" />
+<meta name="generator" content="Org Mode" />
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Recording an EmacsConf 2026 Slide Talk with OBS</h1>
+<div id="outline-container-orgf272a7f" class="outline-2">
+<h2 id="orgf272a7f">What EmacsConf 2026 asks for</h2>
+<div class="outline-text-2" id="text-orgf272a7f">
+<p>
+\index{EmacsConf!requirements}\index{video!specifications}
+</p>
+
+<p>
+The conference is December 12 and 13, 2026. The target upload date was October 30, 2026. The organizers say this date is a target and not a hard deadline, so email emacsconf-org-private@gnu.org to let them know your video is coming.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption class="t-above"><span class="table-number">Table 1:</span> EmacsConf 2026 requirements and the matching OBS setting.</caption>
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Requirement</th>
+<th scope="col" class="org-left">Value</th>
+<th scope="col" class="org-left">Where it is set in OBS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Resolution</td>
+<td class="org-left">1280x720 (720p) or higher</td>
+<td class="org-left">Settings, Video</td>
+</tr>
+
+<tr>
+<td class="org-left">Preferred format</td>
+<td class="org-left">WebM (MP4 accepted)</td>
+<td class="org-left">Convert after recording</td>
+</tr>
+
+<tr>
+<td class="org-left">Colors</td>
+<td class="org-left">Dark text on light background</td>
+<td class="org-left">In the slides themselves</td>
+</tr>
+
+<tr>
+<td class="org-left">Room noise sample</td>
+<td class="org-left">5 seconds or more of silence</td>
+<td class="org-left">Record at the start of the take</td>
+</tr>
+
+<tr>
+<td class="org-left">Opening line</td>
+<td class="org-left">"Hi! I am NAME and I will&#x2026;"</td>
+<td class="org-left">Your script</td>
+</tr>
+
+<tr>
+<td class="org-left">Window capture check</td>
+<td class="org-left">"Swap red and blue" option</td>
+<td class="org-left">Window Capture source properties</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+The analogy for the whole workflow is a slide carousel projector. The PNG files are the slides in the tray, the Image Slide Show source is the projector, and a hotkey is the clicker in your hand. OBS films the screen while you talk.
+</p>
+</div>
+</div>
+<div id="outline-container-org43fb7c4" class="outline-2">
+<h2 id="org43fb7c4">Step 1. Convert the PDF slides to PNG</h2>
+<div class="outline-text-2" id="text-org43fb7c4">
+<p>
+\index{PDF!conversion to PNG}\index{pdftoppm}
+</p>
+
+<p>
+OBS accepts PNG, JPEG, BMP, GIF, and a few other image types in the Image Slide Show source. It does not read PDF. The script <code>pdf2png.sh</code> renders each page as a numbered PNG.
+</p>
+
+<p>
+Install Poppler once.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #721045;">brew</span> install poppler
+</pre>
+</div>
+
+<p>
+Run the script on your deck.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #721045;">chmod</span> +x pdf2png.sh
+<span style="color: #721045;">./pdf2png.sh</span> emacsconf2026.pdf
+<span style="color: #7f0000;"># produces emacsconf2026_png/slide-01.png, slide-02.png, ...</span>
+</pre>
+</div>
+
+<p>
+The default width is 1920 pixels. OBS scales this down to 1280x720 with sharp text. If you export from Beamer, use <code>\documentclass[aspectratio=169]{beamer}</code> so the slides fill the 16:9 frame without black bars.
+</p>
+
+<p>
+The zero-padded numbers matter because OBS sorts files by name. Without padding, slide-10 would play before slide-2.
+</p>
+</div>
+</div>
+<div id="outline-container-org5354fbd" class="outline-2">
+<h2 id="org5354fbd">Step 2. Set the OBS video and output settings</h2>
+<div class="outline-text-2" id="text-org5354fbd">
+<p>
+\index{OBS!video settings}\index{OBS!output settings}
+</p>
+
+<ol class="org-ol">
+<li>Open Settings, then Video.
+<ul class="org-ul">
+<li>Base (Canvas) Resolution = 1280x720</li>
+<li>Output (Scaled) Resolution = 1280x720</li>
+<li>Common FPS Values = 30</li>
+</ul></li>
+<li>Open Settings, then Output. Set Output Mode to Simple.
+<ul class="org-ul">
+<li>Recording Path = a folder you can find again</li>
+<li>Recording Quality = High Quality, Medium File Size</li>
+<li>Recording Format = Matroska Video (.mkv) or Hybrid MP4. Both survive a crash. Use File, Remux Recordings to turn an .mkv into .mp4 afterward.</li>
+</ul></li>
+<li>Open Settings, then Audio. Set Mic/Auxiliary Audio to your external microphone or headset. Set Desktop Audio to Disabled unless you play sound from the computer.</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org75bc49b" class="outline-2">
+<h2 id="org75bc49b">Step 3. Reuse a 2023 or 2024 scene</h2>
+<div class="outline-text-2" id="text-org75bc49b">
+<p>
+\index{OBS!scenes}\index{OBS!Image Slide Show}
+</p>
+
+<p>
+Your old scenes still hold the old PNG lists. Copy one rather than edit it.
+</p>
+
+<ol class="org-ol">
+<li>In the Scenes dock, right-click the 2024 scene and choose Duplicate. Name it EmacsConf 2026.</li>
+<li>In the Sources dock of the new scene, double-click the Image Slide Show source.</li>
+<li>Remove the old files with the minus button. Click plus, choose Add Directory, and select <code>emacsconf2026_png</code>.</li>
+<li>Set these properties.
+<ul class="org-ul">
+<li>Slide Mode = Manual (Use hotkeys to control slideshow)</li>
+<li>Transition = Cut or Fade (Fade with 300 ms is gentle on viewers)</li>
+<li>Bounding Size/Aspect Ratio = 1280x720</li>
+<li>Loop = off</li>
+<li>Hide when slideshow is done = off</li>
+</ul></li>
+<li>Right-click the source in the preview and choose Transform, then Fit to screen.</li>
+</ol>
+
+<p>
+If you add or replace PNG files later, remove and re-add the directory.
+OBS does not always notice new files in a folder that it already loaded.
+</p>
+</div>
+</div>
+<div id="outline-container-org742aa4d" class="outline-2">
+<h2 id="org742aa4d">Step 4. Add your microphone and an optional webcam</h2>
+<div class="outline-text-2" id="text-org742aa4d">
+<p>
+\index{OBS!audio}\index{OBS!webcam}
+</p>
+
+<p>
+The microphone appears in the Audio Mixer dock as Mic/Aux. Speak at normal volume and watch the meter. Aim for peaks in the yellow range around -12 dB, never touching red.
+</p>
+
+<p>
+Right-click Mic/Aux and choose Filters. Add Noise Suppression (RNNoise) and then Limiter at -1 dB. This helps, but the organizers can do better denoising if you also give them the silent room sample.
+</p>
+
+<p>
+A webcam is optional. If you add a Video Capture Device, shrink it to a corner where no slide text sits. The order in the Sources list is the stacking order, and the top item covers the ones below.
+</p>
+</div>
+</div>
+<div id="outline-container-org554a230" class="outline-2">
+<h2 id="org554a230">Step 5. Assign hotkeys for the slides</h2>
+<div class="outline-text-2" id="text-org554a230">
+<p>
+\index{OBS!hotkeys}
+</p>
+
+<ol class="org-ol">
+<li>Open Settings, then Hotkeys.</li>
+<li>Scroll to the name of your Image Slide Show source.</li>
+<li>Assign keys for Next Slide and Previous Slide. Page Down and Page Up work well, and most presentation clickers send these keys.</li>
+<li>Also assign Start Recording and Stop Recording, for example Ctrl+Shift+R and Ctrl+Shift+S.</li>
+</ol>
+
+<p>
+On macOS, OBS needs Input Monitoring and Accessibility permissions in System Settings, Privacy and Security. Without them, the hotkeys only work while the OBS window has focus. Test the keys before the real take.
+</p>
+
+<p>
+Keep speaker notes visible without filming them. Open the PDF in a viewer on a second monitor, or print the notes. OBS films only what is in the scene, so nothing else on your screen appears in the video.
+</p>
+</div>
+</div>
+<div id="outline-container-org392e32a" class="outline-2">
+<h2 id="org392e32a">Step 6. Record the talk</h2>
+<div class="outline-text-2" id="text-org392e32a">
+<p>
+\index{recording!procedure}
+</p>
+
+<ol class="org-ol">
+<li>Close notification apps, turn off fans, and silence your phone.</li>
+<li>Click the first slide into place. Press Previous Slide a few times to be sure you are at slide 1.</li>
+<li>Press Start Recording.</li>
+<li>Stay silent for 5 to 10 seconds. This is the room noise sample.</li>
+<li>Say "Hi! I am Blaine Mooers and I will be talking about TOPIC."</li>
+<li>Advance slides with your Next Slide key as you speak.</li>
+<li>If you stumble, pause for three seconds and repeat the sentence. The pause makes the cut easy to find in the editor.</li>
+<li>Press Stop Recording.</li>
+</ol>
+
+<p>
+The organizers note that many speakers record the narration first, edit it to time, and then lay slides over it. With this approach you can record in OBS with only the slides and your voice, then trim in Kdenlive.
+</p>
+</div>
+</div>
+<div id="outline-container-org17e5d3f" class="outline-2">
+<h2 id="org17e5d3f">Step 7. Check, trim, and convert to WebM</h2>
+<div class="outline-text-2" id="text-org17e5d3f">
+<p>
+\index{WebM!conversion}\index{ffmpeg}
+</p>
+
+<ol class="org-ol">
+<li>Watch the whole recording. Check that the text is readable at 720p and that the audio has no clipping.</li>
+<li>Trim silences and retakes in Kdenlive if needed. Keep the opening silence as a separate clip for the organizers.</li>
+<li>Convert to WebM with the two-pass <code>compress-video.sh</code> script on the EmacsConf prepare page. Copy it into a file and run it like this.</li>
+</ol>
+
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #721045;">sh</span> compress-video.sh recording.mkv emacsconf2026-mooers.webm
+</pre>
+</div>
+
+<p>
+The first pass shows a speed of zero. This is normal. The second pass shows real progress.
+</p>
+
+<ol class="org-ol">
+<li>Upload through the web service when it opens, or email emacsconf-org-private@gnu.org for instructions.</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-org5c9a72a" class="outline-2">
+<h2 id="org5c9a72a">Troubleshooting</h2>
+<div class="outline-text-2" id="text-org5c9a72a">
+<p>
+\index{OBS!troubleshooting}
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption class="t-above"><span class="table-number">Table 2:</span> Common problems and their fixes.</caption>
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Problem</th>
+<th scope="col" class="org-left">Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">Slides play in the wrong order</td>
+<td class="org-left">Check zero padding in file names</td>
+</tr>
+
+<tr>
+<td class="org-left">Slides advance on their own</td>
+<td class="org-left">Set Slide Mode to Manual</td>
+</tr>
+
+<tr>
+<td class="org-left">Hotkeys do nothing outside OBS</td>
+<td class="org-left">Grant Input Monitoring and Accessibility on macOS</td>
+</tr>
+
+<tr>
+<td class="org-left">Black bars beside the slides</td>
+<td class="org-left">Export 16:9 slides (Beamer aspectratio=169)</td>
+</tr>
+
+<tr>
+<td class="org-left">Red and blue look swapped</td>
+<td class="org-left">Toggle "Swap red and blue" in Window Capture</td>
+</tr>
+
+<tr>
+<td class="org-left">New PNG files do not appear</td>
+<td class="org-left">Remove and re-add the directory in the source</td>
+</tr>
+
+<tr>
+<td class="org-left">Text looks blurry</td>
+<td class="org-left">Raise WIDTH in the script, e.g. WIDTH=2560</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="outline-container-orgaecfec7" class="outline-2">
+<h2 id="orgaecfec7">Checklist</h2>
+<div class="outline-text-2" id="text-orgaecfec7">
+<p>
+\index{checklist}
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org">- <span style="color: #884900; font-weight: bold;">[ ]</span> Export slides as 16:9 PDF with dark text on a light background
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Run pdf2png.sh and confirm the slide count
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Set OBS canvas and output to 1280x720 at 30 fps
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Duplicate the 2024 scene and load the new PNG directory
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Set Slide Mode to Manual and assign Next and Previous hotkeys
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Test microphone levels and noise filters
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Record 5 to 10 seconds of silence, then the talk
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Review and trim the recording
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Convert to WebM with compress-video.sh
+- <span style="color: #884900; font-weight: bold;">[ ]</span> Email emacsconf-org-private@gnu.org about the late upload
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Blaine Mooers</p>
+<p class="date">Created: 2026-11-10 Tue 04:57</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,244 @@
+% Created 2026-11-10 Tue 04:59
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{booktabs}
+\usepackage{minted}
+\author{Blaine Mooers}
+\date{\today}
+\title{Recording an EmacsConf 2026 Slide Talk with OBS}
+\hypersetup{
+ pdfauthor={Blaine Mooers},
+ pdftitle={Recording an EmacsConf 2026 Slide Talk with OBS},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 30.2 (Org mode 9.7.11)}, 
+ pdflang={English}}
+\usepackage{calc}
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelsep}
+\setlength{\csllabelsep}{0.6em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{0.45em * 0}
+\newenvironment{cslbibliography}[2] % 1st arg. is hanging-indent, 2nd entry spacing.
+ {% By default, paragraphs are not indented.
+  \setlength{\parindent}{0pt}
+  % Hanging indent is turned on when first argument is 1.
+  \ifodd #1
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
+  \fi
+  % Set entry spacing based on the second argument.
+  \setlength{\parskip}{\parskip +  #2\baselineskip}
+ }%
+ {}
+\newcommand{\cslblock}[1]{#1\hfill\break}
+\newcommand{\cslleftmargin}[1]{\parbox[t]{\csllabelsep + \csllabelwidth}{#1}}
+\newcommand{\cslrightinline}[1]
+  {\parbox[t]{\linewidth - \csllabelsep - \csllabelwidth}{#1}\break}
+\newcommand{\cslindent}[1]{\hspace{\cslhangindent}#1}
+\newcommand{\cslbibitem}[2]
+  {\leavevmode\vadjust pre{\hypertarget{citeproc_bib_item_#1}{}}#2}
+\makeatletter
+\newcommand{\cslcitation}[2]
+ {\protect\hyper@linkstart{cite}{citeproc_bib_item_#1}#2\hyper@linkend}
+\makeatother\begin{document}
+
+\maketitle
+\section*{What EmacsConf 2026 asks for}
+\label{sec:org3cd9614}
+\index{EmacsConf!requirements}\index{video!specifications}
+
+The conference is December 12 and 13, 2026. The target upload date was October 30, 2026. The organizers say this date is a target and not a hard deadline, so email emacsconf-org-private@gnu.org to let them know your video is coming.
+
+\begin{table}[htbp]
+\caption{EmacsConf 2026 requirements and the matching OBS setting.}
+\centering
+\begin{tabular}{lll}
+\toprule
+Requirement & Value & Where it is set in OBS\\
+\midrule
+Resolution & 1280x720 (720p) or higher & Settings, Video\\
+Preferred format & WebM (MP4 accepted) & Convert after recording\\
+Colors & Dark text on light background & In the slides themselves\\
+Room noise sample & 5 seconds or more of silence & Record at the start of the take\\
+Opening line & "Hi! I am NAME and I will\ldots{}" & Your script\\
+Window capture check & "Swap red and blue" option & Window Capture source properties\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The analogy for the whole workflow is a slide carousel projector. The PNG files are the slides in the tray, the Image Slide Show source is the projector, and a hotkey is the clicker in your hand. OBS films the screen while you talk.
+\section*{Step 1. Convert the PDF slides to PNG}
+\label{sec:orga37724e}
+\index{PDF!conversion to PNG}\index{pdftoppm}
+
+OBS accepts PNG, JPEG, BMP, GIF, and a few other image types in the Image Slide Show source. It does not read PDF. The script \texttt{pdf2png.sh} renders each page as a numbered PNG.
+
+Install Poppler once.
+
+\begin{verbatim}
+brew install poppler
+\end{verbatim}
+
+Run the script on your deck.
+
+\begin{verbatim}
+chmod +x pdf2png.sh
+./pdf2png.sh emacsconf2026.pdf
+# produces emacsconf2026_png/slide-01.png, slide-02.png, ...
+\end{verbatim}
+
+The default width is 1920 pixels. OBS scales this down to 1280x720 with sharp text. If you export from Beamer, use \texttt{\textbackslash{}documentclass[aspectratio=169]\{beamer\}} so the slides fill the 16:9 frame without black bars.
+
+The zero-padded numbers matter because OBS sorts files by name. Without padding, slide-10 would play before slide-2.
+\section*{Step 2. Set the OBS video and output settings}
+\label{sec:orgeca7086}
+\index{OBS!video settings}\index{OBS!output settings}
+
+\begin{enumerate}
+\item Open Settings, then Video.
+\begin{itemize}
+\item Base (Canvas) Resolution = 1280x720
+\item Output (Scaled) Resolution = 1280x720
+\item Common FPS Values = 30
+\end{itemize}
+\item Open Settings, then Output. Set Output Mode to Simple.
+\begin{itemize}
+\item Recording Path = a folder you can find again
+\item Recording Quality = High Quality, Medium File Size
+\item Recording Format = Matroska Video (.mkv) or Hybrid MP4. Both survive a crash. Use File, Remux Recordings to turn an .mkv into .mp4 afterward.
+\end{itemize}
+\item Open Settings, then Audio. Set Mic/Auxiliary Audio to your external microphone or headset. Set Desktop Audio to Disabled unless you play sound from the computer.
+\end{enumerate}
+\section*{Step 3. Reuse a 2023 or 2024 scene}
+\label{sec:orgbd6d35b}
+\index{OBS!scenes}\index{OBS!Image Slide Show}
+
+Your old scenes still hold the old PNG lists. Copy one rather than edit it.
+
+\begin{enumerate}
+\item In the Scenes dock, right-click the 2024 scene and choose Duplicate. Name it EmacsConf 2026.
+\item In the Sources dock of the new scene, double-click the Image Slide Show source.
+\item Remove the old files with the minus button. Click plus, choose Add Directory, and select \texttt{emacsconf2026\_png}.
+\item Set these properties.
+\begin{itemize}
+\item Slide Mode = Manual (Use hotkeys to control slideshow)
+\item Transition = Cut or Fade (Fade with 300 ms is gentle on viewers)
+\item Bounding Size/Aspect Ratio = 1280x720
+\item Loop = off
+\item Hide when slideshow is done = off
+\end{itemize}
+\item Right-click the source in the preview and choose Transform, then Fit to screen.
+\end{enumerate}
+
+If you add or replace PNG files later, remove and re-add the directory.
+OBS does not always notice new files in a folder that it already loaded.
+\section*{Step 4. Add your microphone and an optional webcam}
+\label{sec:orgc1a9952}
+\index{OBS!audio}\index{OBS!webcam}
+
+The microphone appears in the Audio Mixer dock as Mic/Aux. Speak at normal volume and watch the meter. Aim for peaks in the yellow range around -12 dB, never touching red.
+
+Right-click Mic/Aux and choose Filters. Add Noise Suppression (RNNoise) and then Limiter at -1 dB. This helps, but the organizers can do better denoising if you also give them the silent room sample.
+
+A webcam is optional. If you add a Video Capture Device, shrink it to a corner where no slide text sits. The order in the Sources list is the stacking order, and the top item covers the ones below.
+\section*{Step 5. Assign hotkeys for the slides}
+\label{sec:org5eee6cb}
+\index{OBS!hotkeys}
+
+\begin{enumerate}
+\item Open Settings, then Hotkeys.
+\item Scroll to the name of your Image Slide Show source.
+\item Assign keys for Next Slide and Previous Slide. Page Down and Page Up work well, and most presentation clickers send these keys.
+\item Also assign Start Recording and Stop Recording, for example Ctrl+Shift+R and Ctrl+Shift+S.
+\end{enumerate}
+
+On macOS, OBS needs Input Monitoring and Accessibility permissions in System Settings, Privacy and Security. Without them, the hotkeys only work while the OBS window has focus. Test the keys before the real take.
+
+Keep speaker notes visible without filming them. Open the PDF in a viewer on a second monitor, or print the notes. OBS films only what is in the scene, so nothing else on your screen appears in the video.
+\section*{Step 6. Record the talk}
+\label{sec:orge822153}
+\index{recording!procedure}
+
+\begin{enumerate}
+\item Close notification apps, turn off fans, and silence your phone.
+\item Click the first slide into place. Press Previous Slide a few times to be sure you are at slide 1.
+\item Press Start Recording.
+\item Stay silent for 5 to 10 seconds. This is the room noise sample.
+\item Say "Hi! I am Blaine Mooers and I will be talking about TOPIC."
+\item Advance slides with your Next Slide key as you speak.
+\item If you stumble, pause for three seconds and repeat the sentence. The pause makes the cut easy to find in the editor.
+\item Press Stop Recording.
+\end{enumerate}
+
+The organizers note that many speakers record the narration first, edit it to time, and then lay slides over it. With this approach you can record in OBS with only the slides and your voice, then trim in Kdenlive.
+\section*{Step 7. Check, trim, and convert to WebM}
+\label{sec:org37b20cc}
+\index{WebM!conversion}\index{ffmpeg}
+
+\begin{enumerate}
+\item Watch the whole recording. Check that the text is readable at 720p and that the audio has no clipping.
+\item Trim silences and retakes in Kdenlive if needed. Keep the opening silence as a separate clip for the organizers.
+\item Convert to WebM with the two-pass \texttt{compress-video.sh} script on the EmacsConf prepare page. Copy it into a file and run it like this.
+\end{enumerate}
+
+\begin{verbatim}
+sh compress-video.sh recording.mkv emacsconf2026-mooers.webm
+\end{verbatim}
+
+The first pass shows a speed of zero. This is normal. The second pass shows real progress.
+
+\begin{enumerate}
+\item Upload through the web service when it opens, or email emacsconf-org-private@gnu.org for instructions.
+\end{enumerate}
+\section*{Troubleshooting}
+\label{sec:orgc269544}
+\index{OBS!troubleshooting}
+
+\begin{table}[htbp]
+\caption{Common problems and their fixes.}
+\centering
+\begin{tabular}{ll}
+\toprule
+Problem & Fix\\
+\midrule
+Slides play in the wrong order & Check zero padding in file names\\
+Slides advance on their own & Set Slide Mode to Manual\\
+Hotkeys do nothing outside OBS & Grant Input Monitoring and Accessibility on macOS\\
+Black bars beside the slides & Export 16:9 slides (Beamer aspectratio=169)\\
+Red and blue look swapped & Toggle "Swap red and blue" in Window Capture\\
+New PNG files do not appear & Remove and re-add the directory in the source\\
+Text looks blurry & Raise WIDTH in the script, e.g. WIDTH=2560\\
+\bottomrule
+\end{tabular}
+\end{table}
+\section*{Checklist}
+\label{sec:orge937168}
+\index{checklist}
+
+\begin{verbatim}
+- [ ] Export slides as 16:9 PDF with dark text on a light background
+- [ ] Run pdf2png.sh and confirm the slide count
+- [ ] Set OBS canvas and output to 1280x720 at 30 fps
+- [ ] Duplicate the 2024 scene and load the new PNG directory
+- [ ] Set Slide Mode to Manual and assign Next and Previous hotkeys
+- [ ] Test microphone levels and noise filters
+- [ ] Record 5 to 10 seconds of silence, then the talk
+- [ ] Review and trim the recording
+- [ ] Convert to WebM with compress-video.sh
+- [ ] Email emacsconf-org-private@gnu.org about the late upload
+\end{verbatim}
+\end{document}
