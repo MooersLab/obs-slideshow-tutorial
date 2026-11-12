@@ -1,3 +1,8 @@
+![Version](https://img.shields.io/static/v1?label=obs-slideshow-tutorial&message=0.1.0&color=brightcolor)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Emacs](https://img.shields.io/badge/Emacs-26.1+-purple.svg)](https://www.gnu.org/software/emacs/)
+
+
 # Tutorial for making a video of a slideshow in OBS
 
 Open Broadcaster Software (OBS) is a free, open-source software package for making videos.
@@ -15,13 +20,13 @@ OBS is the suggested software for preparing videos for the EmacsConf in December
 This two-track, two-day conference features pre-recorded talks with live discussions immediately after each talk.
 The pre-recorded talks greatly reduce technical difficulties that can occur during an online conference.
 
-In November 2026, it was the fifth time I'd done this, and it took me about 3 hours to get OBS into a state where it could start recording a video.
+In November 2026, it was the fifth time I'd done this, and it took me about 3 hours to get OBS into a state where it could start recording.
 I had done some stupid things, like leaving a cover over my webcam, so I couldn't see the green light indicating that the camera was actually on.
 The black screen I saw was the back of the cover over the camera.
 This mistake cost me about half an hour.
 
 I decided to develop a detailed protocol for my future self.
-I posted it here for others' benefit.
+I posted it here for others to benefit from.
 It is in several alternate formats.
 
 # Recording Issues
@@ -40,10 +45,10 @@ Light leaks through the blinds when recording during the day, so recording in th
 
 ## Use external microphone (?)
 
-It's often recommended that when recording a talk, you use an external microphone. 
+It's often recommended that you use an external microphone when recording a talk. 
 Apparently, many laptops have inadequate built-in microphones.
-Often, these microphones add a metallic effect.
-You should test the assumption that your built-in microphones are inadequate.
+These microphones often add a metallic effect.
+You should test whether your built-in microphones are inadequate.
 I have found that the built-in microphone in my 2024 MacBook Pro produces results just as good as any external microphone I've tried, including three expensive ones.
 
 ## Resizing of the slides
